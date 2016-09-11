@@ -56,6 +56,11 @@ QRectF OverlayGroup::boundingRect() const {
 	return qr;
 }
 
+QString OverlayPrivate::getPipepathSuffix() const
+{
+	return pipepathSuffix;
+}
+
 Overlay::Overlay() : QObject() {
 	d = NULL;
 
@@ -65,7 +70,7 @@ Overlay::Overlay() : QObject() {
 	qlsServer = new QLocalServer(this);
 	QString pipepath;
 #ifdef Q_OS_WIN
-	pipepath = QLatin1String("MumbleOverlayPipe");
+	pipepath = QLatin1String("MumbleOverlayPipe" + d->pipepathSuffix.toLatin1().data());
 #else
 	{
 		QString xdgRuntimePath = QProcessEnvironment::systemEnvironment().value(QLatin1String("XDG_RUNTIME_DIR"));

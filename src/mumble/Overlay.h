@@ -63,8 +63,11 @@ class OverlayPrivate : public QObject {
 	private:
 		Q_OBJECT
 		Q_DISABLE_COPY(OverlayPrivate)
+	protected:
+		QString pipepathSuffix;
 	public:
 		OverlayPrivate(QObject *p) : QObject(p) {};
+		QString getPipepathSuffix() const;
 };
 
 class Overlay : public QObject {

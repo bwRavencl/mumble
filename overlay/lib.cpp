@@ -10,6 +10,8 @@
 
 #undef max // for std::numeric_limits<T>::max()
 
+HANDLE hParent = NULL;
+
 static HANDLE hMapObject = NULL;
 static HANDLE hHookMutex = NULL;
 static HHOOK hhookWnd = 0;
@@ -121,7 +123,8 @@ void Pipe::checkMessage(unsigned int width, unsigned int height) {
 		return;
 
 	if (hSocket == INVALID_HANDLE_VALUE) {
-		hSocket = CreateFileW(L"\\\\.\\pipe\\MumbleOverlayPipe", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+		const wchar_t *pipepathSuffix = std::to_wstring(reinterpret_cast<intptr_t>(hParent)).c_str();
+		hSocket = CreateFileW(L"\\\\.\\pipe\\MumbleOverlayPipe" + pipepathSuffix, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 		if (hSocket == INVALID_HANDLE_VALUE) {
 			ods("Pipe: Connection failed");
 			return;
@@ -437,6 +440,8 @@ extern "C" __declspec(dllexport) int __cdecl OverlayHelperProcessMain(unsigned i
 	if (pcheckHandle == 0) {
 		return OVERLAY_HELPER_ERROR_DLL_PDEATH_THREAD_ERROR;
 	}
+
+	hParent = parent;
 
 	PrepareD3D9();
 	PrepareDXGI();

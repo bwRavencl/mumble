@@ -74,8 +74,10 @@ OverlayPrivateWin::OverlayPrivateWin(QObject *p) : OverlayPrivate(p) {
 	}
 
 	m_helper_exe_path = QString::fromLatin1("%1/mumble_ol_helper.exe").arg(MumbleApplication::instance()->applicationVersionRootPath());
+	QString mumble_handle_str = QString::number(reinterpret_cast<quintptr>(m_mumble_handle));
+	pipepathSuffix = mumble_handle_str;
 	m_helper_exe_args << QString::number(OVERLAY_MAGIC_NUMBER)
-	                  << QString::number(reinterpret_cast<quintptr>(m_mumble_handle));
+	                  << mumble_handle_str;
 	m_helper_process = new QProcess(this);
 
 	connect(m_helper_process, SIGNAL(started()),
@@ -296,6 +298,11 @@ void OverlayPrivateWin::onDelayedRestartTimerTriggered() {
 	if (helper->state() == QProcess::NotRunning) {
 		startHelper(helper);
 	}
+}
+
+HANDLE OverlayPrivateWin::mumble_handle() const
+{
+    return m_mumble_handle;
 }
 
 void Overlay::platformInit() {
